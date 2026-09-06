@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JK Saloon | Owner Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+    <script>
+        if (sessionStorage.getItem("adminLoggedIn") !== "true") {
+            window.location.href = "admin-login.html";
+        }
+    </script>
+</head>
+<body>
+
+<header class="admin-header">
+    <div class="brand-block">
+        <div class="brand-mark">JK</div>
+        <div>
+            <h1>JK SALOON</h1>
+            <p>OWNER MANAGEMENT PANEL</p>
+        </div>
+    </div>
+
+    <div class="header-right">
+        <span class="live-dot">● LIVE</span>
+        <button class="logout-btn" type="button" onclick="adminLogout()">Logout</button>
+    </div>
+</header>
+
+<main class="dashboard-container">
+
+    <section class="welcome-row">
+        <div>
+            <span class="eyebrow">OWNER DASHBOARD</span>
+            <h2>Business Overview</h2>
+            <p>Monitor appointments, status and daily earnings.</p>
+        </div>
+        <button class="refresh-btn" type="button" onclick="loadAppointments(true)">
+            ↻ Refresh
+        </button>
+    </section>
+
+    <section class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-icon">▦</div>
+            <div><span>Total Appointments</span><strong id="totalCount">0</strong></div>
+        </article>
+        <article class="stat-card booked-card">
+            <div class="stat-icon">◷</div>
+            <div><span>Booked</span><strong id="bookedCount">0</strong></div>
+        </article>
+        <article class="stat-card completed-card">
+            <div class="stat-icon">✓</div>
+            <div><span>Completed</span><strong id="completedCount">0</strong></div>
+        </article>
+        <article class="stat-card cancelled-card">
+            <div class="stat-icon">×</div>
+            <div><span>Cancelled</span><strong id="cancelledCount">0</strong></div>
+        </article>
+        <article class="stat-card earnings-card">
+            <div class="stat-icon">₹</div>
+            <div><span>Total Earnings</span><strong id="totalEarnings">₹0</strong></div>
+        </article>
+        <article class="stat-card today-card">
+            <div class="stat-icon">₹</div>
+            <div><span>Today's Earnings</span><strong id="todayEarnings">₹0</strong></div>
+        </article>
+    </section>
+
+    <section class="appointments-section">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">CUSTOMER BOOKINGS</span>
+                <h2>Appointments</h2>
+                <p>Manage every customer booking from one place.</p>
+            </div>
+            <div class="updated-text" id="lastUpdated">Waiting for data...</div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Style</th>
+                            <th>Package</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentTable">
+                        <tr><td colspan="10" class="loading">Loading appointments...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="admin-footer">© 2026 JK Saloon • Owner Dashboard</footer>
+<script src="admin.js"></script>
+</body>
+</html>
