@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>JK Saloon</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     SPLASH SCREEN
+     ========================================= -->
+
+<div id="splashScreen">
+
+    <div class="splash-content">
+
+        <div class="splash-logo">
+            <span>JK</span>
+        </div>
+
+        <h1>JK SALOON</h1>
+
+        <p>LOOK GOOD • FEEL CONFIDENT</p>
+
+        <div class="splash-loader">
+            <span></span>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     HEADER
+     ========================================= -->
+
+<header>
+
+    <!-- LOGO -->
+
+    <div class="logo">
+
+        <span>
+            JK
+        </span>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <nav id="mainNav">
+
+        <ul>
+
+            <li>
+                <a href="#home">
+                    Home
+                </a>
+            </li>
+
+            <li>
+                <a href="#styles">
+                    Styles
+                </a>
+            </li>
+
+            <li>
+                <a href="#packages">
+                    Packages
+                </a>
+            </li>
+
+            <li>
+                <a href="#appointment">
+                    Appointment
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- USER ACTIONS -->
+
+    <div class="user-actions">
+
+        <a class="cart admin-login-icon"
+           href="./admin-login.html"
+           title="Owner Admin Login"
+           aria-label="Owner Admin Login">
+            🛒
+        </a>
+
+        <button class="back"
+                type="button"
+                onclick="window.history.back()"
+                title="Go Back"
+                aria-label="Go Back">
+            ↩
+        </button>
+
+    </div>
+
+
+    <!-- MOBILE MENU -->
+
+    <button
+        class="mobile-menu-btn"
+        onclick="toggleMobileMenu()">
+
+        ☰
+
+    </button>
+
+</header>
+
+
+
+<!-- =========================================
+     HERO SECTION
+     ========================================= -->
+
+<section
+    class="hero"
+    id="home">
+
+
+    <div class="hero-content">
+
+        <p class="welcome">
+            WELCOME TO JK SALOON
+        </p>
+
+
+        <h1>
+
+            LOOK GOOD.<br>
+
+            FEEL
+            <span>
+                CONFIDENT.
+            </span>
+
+        </h1>
+
+
+        <p class="hero-text">
+
+            Premium grooming, stylish haircuts,
+            and the finest care — because you deserve the best.
+
+        </p>
+
+
+        <div class="hero-buttons">
+
+
+            <button
+                class="book-btn"
+                onclick="goToAppointment()">
+
+                BOOK APPOINTMENT
+
+            </button>
+
+
+            <button
+                class="style-btn"
+                onclick="document.getElementById('styles').scrollIntoView({behavior:'smooth'})">
+
+                EXPLORE STYLES
+
+            </button>
+
+
+        </div>
+
+    </div>
+
+
+
+    <div class="hero-image">
+
+        <img
+            src="image/saloon.jpg"
+            alt="JK Saloon Barber">
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =========================================
+     STYLES SECTION
+     ========================================= -->
+
+<section
+    class="styles-section"
+    id="styles">
+
+
+    <p class="section-small">
+
+        OUR SIGNATURE STYLES
+
+    </p>
+
+
+    <h2>
+
+        Choose Your
+        <span>
+            Style
+        </span>
+
+    </h2>
+
+
+
+    <div class="style-container">
+
+
+        <!-- LOW FADE -->
+
+        <div class="style-card">
+
+            <img
+                src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=600&q=80"
+                alt="Low Fade Haircut">
+
+
+            <div class="card-content">
+
+                <h3>
+                    Low Fade
+                </h3>
+
+
+                <p>
+
+                    Clean and stylish fade
+                    with a smooth finish.
+
+                </p>
+
+
+                <button
+                    onclick="selectStyle('Low Fade')">
+
+                    SELECT STYLE
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- MID FADE -->
+
+        <div class="style-card">
+
+            <img
+                src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=600&q=80"
+                alt="Mid Fade Haircut">
+
+
+            <div class="card-content">
+
+                <h3>
+                    Mid Fade
+                </h3>
+
+
+                <p>
+
+                    A modern fade that
+                    gives a sharp look.
+
+                </p>
+
+
+                <button
+                    onclick="selectStyle('Mid Fade')">
+
+                    SELECT STYLE
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- HIGH FADE -->
+
+        <div class="style-card">
+
+            <img
+                src="https://images.unsplash.com/photo-1622296089863-eb7fc530daa8?auto=format&fit=crop&w=600&q=80"
+                alt="High Fade Haircut">
+
+
+            <div class="card-content">
+
+                <h3>
+                    High Fade
+                </h3>
+
+
+                <p>
+
+                    Bold and clean fade
+                    for a confident appearance.
+
+                </p>
+
+
+                <button
+                    onclick="selectStyle('High Fade')">
+
+                    SELECT STYLE
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- MULLET -->
+
+        <div class="style-card">
+
+            <img
+                src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=600&q=80"
+                alt="Mullet Haircut">
+
+
+            <div class="card-content">
+
+                <h3>
+                    Mullet
+                </h3>
+
+
+                <p>
+
+                    Trendy modern mullet
+                    with a bold personality.
+
+                </p>
+
+
+                <button
+                    onclick="selectStyle('Mullet')">
+
+                    SELECT STYLE
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- BUZZ CUT -->
+
+        <div class="style-card">
+
+            <img
+                src="https://images.unsplash.com/photo-1582095133179-bfd08e2fc6b3?auto=format&fit=crop&w=600&q=80"
+                alt="Buzz Cut">
+
+
+            <div class="card-content">
+
+                <h3>
+                    Buzz Cut
+                </h3>
+
+
+                <p>
+
+                    Simple and clean
+                    buzz cut.
+
+                </p>
+
+
+                <button
+                    onclick="selectStyle('Buzz Cut')">
+
+                    SELECT STYLE
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- FRENCH CROP -->
+
+        <div class="style-card">
+
+            <img
+                src="image/image.jpg"
+                alt="French Crop">
+
+
+            <div class="card-content">
+
+                <h3>
+                    French Crop
+                </h3>
+
+
+                <p>
+
+                    Textured top with
+                    a clean modern finish.
+
+                </p>
+
+
+                <button
+                    onclick="selectStyle('French Crop')">
+
+                    SELECT STYLE
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     PACKAGES SECTION
+     ========================================= -->
+
+<section
+    class="packages-section"
+    id="packages">
+
+
+    <p class="package-small">
+
+        POPULAR PACKAGES
+
+    </p>
+
+
+    <h2>
+
+        Choose Your
+        <span>
+            Package
+        </span>
+
+    </h2>
+
+
+
+    <div class="packages-container">
+
+
+        <!-- BASIC -->
+
+        <div class="package-card">
+
+            <p class="package-name">
+                BASIC
+            </p>
+
+
+            <h3>
+                ₹199
+            </h3>
+
+
+            <div class="line"></div>
+
+
+            <p>
+                Haircut
+            </p>
+
+            <p>
+                Hair Wash
+            </p>
+
+            <p>
+                Basic Styling
+            </p>
+
+
+            <button
+                onclick="selectPackage('Basic Haircut')">
+
+                BOOK NOW
+
+            </button>
+
+        </div>
+
+
+
+        <!-- CLASSIC -->
+
+        <div class="package-card popular">
+
+            <div class="popular-tag">
+                POPULAR
+            </div>
+
+
+            <p class="package-name">
+                CLASSIC
+            </p>
+
+
+            <h3>
+                ₹299
+            </h3>
+
+
+            <div class="line"></div>
+
+
+            <p>
+                Haircut
+            </p>
+
+            <p>
+                Hair Wash
+            </p>
+
+            <p>
+                Beard Styling
+            </p>
+
+            <p>
+                Hair Styling
+            </p>
+
+
+            <button
+                onclick="selectPackage('Classic Package')">
+
+                BOOK NOW
+
+            </button>
+
+        </div>
+
+
+
+        <!-- PREMIUM -->
+
+        <div class="package-card">
+
+            <p class="package-name">
+                PREMIUM
+            </p>
+
+
+            <h3>
+                ₹499
+            </h3>
+
+
+            <div class="line"></div>
+
+
+            <p>
+                Premium Haircut
+            </p>
+
+            <p>
+                Hair Wash
+            </p>
+
+            <p>
+                Beard Styling
+            </p>
+
+            <p>
+                Head Massage
+            </p>
+
+
+            <button
+                onclick="selectPackage('Premium Package')">
+
+                BOOK NOW
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ROYAL -->
+
+        <div class="package-card">
+
+            <p class="package-name">
+                ROYAL
+            </p>
+
+
+            <h3>
+                ₹699
+            </h3>
+
+
+            <div class="line"></div>
+
+
+            <p>
+                Premium Haircut
+            </p>
+
+            <p>
+                Hair Spa
+            </p>
+
+            <p>
+                Beard Styling
+            </p>
+
+            <p>
+                Head Massage
+            </p>
+
+            <p>
+                Face Cleanup
+            </p>
+
+
+            <button
+                onclick="selectPackage('Royal Package')">
+
+                BOOK NOW
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     APPOINTMENT SECTION
+     ========================================= -->
+
+<section
+    class="appointment-section"
+    id="appointment">
+
+
+    <h2>
+        Book Your Appointment
+    </h2>
+
+
+
+    <form id="appointmentForm">
+
+
+        <input
+            type="text"
+            id="customerName"
+            placeholder="Your Name"
+            required>
+
+
+        <input
+            type="tel"
+            id="customerPhone"
+            placeholder="Phone Number"
+            required>
+
+
+        <input
+            type="email"
+            id="customerEmail"
+            placeholder="Email"
+            required>
+
+
+        <select
+            id="service"
+            required>
+
+            <option value="">
+                Select Service
+            </option>
+
+            <option value="Low Fade">
+                Low Fade
+            </option>
+
+            <option value="Mid Fade">
+                Mid Fade
+            </option>
+
+            <option value="High Fade">
+                High Fade
+            </option>
+
+            <option value="Mullet">
+                Mullet
+            </option>
+
+            <option value="Buzz Cut">
+                Buzz Cut
+            </option>
+
+            <option value="French Crop">
+                French Crop
+            </option>
+
+        </select>
+
+
+
+        <select
+            id="package"
+            required>
+
+            <option value="">
+                Select Package
+            </option>
+
+            <option value="Basic Haircut">
+                Basic - ₹199
+            </option>
+
+            <option value="Classic Package">
+                Classic - ₹299
+            </option>
+
+            <option value="Premium Package">
+                Premium - ₹499
+            </option>
+
+            <option value="Royal Package">
+                Royal - ₹699
+            </option>
+
+        </select>
+
+
+
+        <input
+            type="date"
+            id="appointmentDate"
+            required>
+
+
+        <input
+            type="time"
+            id="appointmentTime"
+            required>
+
+
+        <textarea
+            id="customerMessage"
+            placeholder="Additional Message"></textarea>
+
+
+        <button type="submit">
+
+            BOOK APPOINTMENT
+
+        </button>
+
+
+    </form>
+
+
+
+    <!-- SUCCESS RESPONSE -->
+
+    <div id="bookingResponse"></div>
+
+
+</section>
+
+
+
+<!-- =========================================
+     FOOTER
+     ========================================= -->
+
+<footer
+    class="footer"
+    id="footer">
+
+
+    <div class="footer-container">
+
+
+        <!-- ABOUT -->
+
+        <div class="footer-box">
+
+            <div class="footer-logo">
+
+                <span>
+                    JK
+                </span>
+
+                <h2>
+                    JK SALOON
+                </h2>
+
+            </div>
+
+
+            <p>
+
+                Premium grooming and modern
+                styling for those who believe
+                in looking their best.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- QUICK LINKS -->
+
+        <div class="footer-box">
+
+            <h3>
+                Quick Links
+            </h3>
+
+
+            <a href="#home">
+                Home
+            </a>
+
+
+            <a href="#styles">
+                Styles
+            </a>
+
+
+            <a href="#packages">
+                Packages
+            </a>
+
+
+            <a href="#appointment">
+                Appointment
+            </a>
+
+
+            <!-- OWNER LOGIN -->
+
+            <a href="./admin-login.html">
+                Owner Login
+            </a>
+
+        </div>
+
+
+
+        <!-- SERVICES -->
+
+        <div class="footer-box">
+
+            <h3>
+                Our Services
+            </h3>
+
+
+            <a href="#">
+                Haircut
+            </a>
+
+
+            <a href="#">
+                Beard Styling
+            </a>
+
+
+            <a href="#">
+                Hair Spa
+            </a>
+
+
+            <a href="#">
+                Head Massage
+            </a>
+
+        </div>
+
+
+
+        <!-- CONTACT -->
+
+        <div class="footer-box">
+
+            <h3>
+                Contact Us
+            </h3>
+
+
+            <p>
+                📍 Main Road, Tirupati
+            </p>
+
+
+            <p>
+                📞 +91 98765 43210
+            </p>
+
+
+            <p>
+                ✉ jksaloon@gmail.com
+            </p>
+
+
+            <p>
+                🕐 9:00 AM - 9:00 PM
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 JK Saloon. All Rights Reserved.
+        </p>
+
+
+        <p>
+            Crafted with ✂ & ❤️
+        </p>
+
+    </div>
+
+
+</footer>
+
+
+
+<!-- =========================================
+     MOBILE APP BOTTOM NAVIGATION
+     ========================================= -->
+
+<div class="app-bottom-nav">
+
+
+    <a
+        href="#home"
+        class="active">
+
+        <span>
+            ⌂
+        </span>
+
+        Home
+
+    </a>
+
+
+
+    <a href="#styles">
+
+        <span>
+            ✂
+        </span>
+
+        Styles
+
+    </a>
+
+
+
+    <a href="#packages">
+
+        <span>
+            ♜
+        </span>
+
+        Packages
+
+    </a>
+
+
+
+    <a href="#appointment">
+
+        <span>
+            📅
+        </span>
+
+        Booking
+
+    </a>
+
+
+
+    <a href="#footer">
+
+        <span>
+            ☎
+        </span>
+
+        Contact
+
+    </a>
+
+
+</div>
+
+
+
+<!-- =========================================
+     BOOKING SUCCESS POPUP
+     ========================================= -->
+
+<div
+    id="bookingSuccessModal"
+    class="booking-modal">
+
+
+    <div class="booking-success-box">
+
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+
+        <h2>
+            Booking Confirmed!
+        </h2>
+
+
+        <p class="success-subtitle">
+
+            Your appointment has been booked successfully.
+
+        </p>
+
+
+
+        <div class="success-details">
+
+
+            <div>
+
+                <span>
+                    Customer
+                </span>
+
+                <strong id="successCustomer">
+                    -
+                </strong>
+
+            </div>
+
+
+
+            <div>
+
+                <span>
+                    Service
+                </span>
+
+                <strong id="successService">
+                    -
+                </strong>
+
+            </div>
+
+
+
+            <div>
+
+                <span>
+                    Package
+                </span>
+
+                <strong id="successPackage">
+                    -
+                </strong>
+
+            </div>
+
+
+
+            <div>
+
+                <span>
+                    Date
+                </span>
+
+                <strong id="successDate">
+                    -
+                </strong>
+
+            </div>
+
+
+
+            <div>
+
+                <span>
+                    Time
+                </span>
+
+                <strong id="successTime">
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <button
+            type="button"
+            onclick="closeBookingSuccess()">
+
+            Done
+
+        </button>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     JAVASCRIPT
+     ========================================= -->
+
+<script src="./javaScript.js/response.js"></script>
+<script>
+window.addEventListener("load", function () {
+    setTimeout(function () {
+        const splash = document.getElementById("splashScreen");
+
+        if (splash) {
+            splash.classList.add("hide");
+        }
+    }, 1500);
+});
+</script>
+
+</body>
+
+</html>
