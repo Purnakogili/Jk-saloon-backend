@@ -1,5 +1,4 @@
-const API_URL = "http://localhost:8080/api/appointments";
-
+const API_URL = "https://jk-saloon-backend-n69q.onrender.com/api/appointments";
 const PACKAGE_PRICES = {
     "basic": 199,
     "classic": 299,
