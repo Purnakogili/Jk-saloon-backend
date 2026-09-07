@@ -2,18 +2,23 @@
 // JK SALOON - RESPONSE.JS
 // ========================================
 
-const API_URL = "https://jk-saloon-backend-n69q.onrender.com/api/appointments";
+const API_URL =
+    "https://jk-saloon-backend-n69q.onrender.com/api/appointments";
 
 
 // ========================================
-// SALOON / OFFICE TIMINGS
+// SALOON TIMINGS
 // ========================================
 
-// 10:00 AM
-const OPEN_TIME = "10:00";
+// 09:00 AM
+const OPEN_TIME = "09:00";
 
-// 8:00 PM
-const CLOSE_TIME = "20:00";
+// 09:00 PM
+const CLOSE_TIME = "21:00";
+
+// Lunch Break
+const LUNCH_START = "13:00";
+const LUNCH_END = "14:30";
 
 
 // ========================================
@@ -30,7 +35,6 @@ function getTodayIST() {
         month: "2-digit",
         day: "2-digit"
     }).format(now);
-
 }
 
 
@@ -48,7 +52,40 @@ function getCurrentTimeIST() {
         minute: "2-digit",
         hour12: false
     }).format(now);
+}
 
+
+// ========================================
+// FORMAT TIME
+// ========================================
+
+function formatTime(time) {
+
+    const parts = time.split(":");
+
+    let hour = parseInt(parts[0], 10);
+
+    const minute = parts[1];
+
+    const ampm = hour >= 12 ? "PM" : "AM";
+
+    hour = hour % 12;
+
+    if (hour === 0) {
+        hour = 12;
+    }
+
+    return `${hour}:${minute} ${ampm}`;
+}
+
+
+// ========================================
+// CHECK LUNCH BREAK
+// ========================================
+
+function isLunchBreak(time) {
+
+    return time >= LUNCH_START && time < LUNCH_END;
 }
 
 
@@ -58,90 +95,176 @@ function getCurrentTimeIST() {
 
 function setupDateTimeValidation() {
 
-    const dateSelect = document.getElementById("appointmentDate");
-    const timeSelect = document.getElementById("appointmentTime");
+    const dateSelect =
+        document.getElementById("appointmentDate");
 
-    if (!dateSelect || !timeSelect) return;
+    const timeSelect =
+        document.getElementById("appointmentTime");
+
+    if (!dateSelect || !timeSelect) {
+        return;
+    }
+
 
     const today = getTodayIST();
 
-    // Create date dropdown for the next 30 days.
+
+    // ====================================
+    // CREATE DATE OPTIONS
+    // NEXT 30 DAYS
+    // ====================================
+
+    dateSelect.innerHTML =
+        '<option value="">Select Date</option>';
+
     for (let i = 0; i < 30; i++) {
+
         const date = new Date();
+
         date.setDate(date.getDate() + i);
 
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        const value = `${year}-${month}-${day}`;
 
-        const label = date.toLocaleDateString("en-IN", {
-            weekday: "short",
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        });
+        const year =
+            date.getFullYear();
 
-        const option = document.createElement("option");
+        const month =
+            String(date.getMonth() + 1).padStart(2, "0");
+
+        const day =
+            String(date.getDate()).padStart(2, "0");
+
+
+        const value =
+            `${year}-${month}-${day}`;
+
+
+        const label =
+            date.toLocaleDateString("en-IN", {
+                weekday: "short",
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
+
+
+        const option =
+            document.createElement("option");
+
         option.value = value;
+
         option.textContent = label;
+
         dateSelect.appendChild(option);
     }
 
+
+    // ====================================
+    // POPULATE TIME OPTIONS
+    // ====================================
+
     function populateTimeDropdown(selectedDate) {
-        timeSelect.innerHTML = '<option value="">Select Time</option>';
 
-        if (!selectedDate) return;
+        timeSelect.innerHTML =
+            '<option value="">Select Time</option>';
 
-        const currentTime = getCurrentTimeIST();
 
-        for (let hour = 10; hour <= 20; hour++) {
+        if (!selectedDate) {
+            return;
+        }
+
+
+        const currentTime =
+            getCurrentTimeIST();
+
+
+        // ====================================
+        // 09:00 AM TO 09:00 PM
+        // 30 MINUTE INTERVAL
+        // ====================================
+
+        for (let hour = 9; hour <= 21; hour++) {
+
             for (const minute of [0, 30]) {
 
-                // 8:30 PM is outside salon hours.
-                if (hour === 20 && minute === 30) continue;
+                // Do not create 09:30 PM
+                if (hour === 21 && minute === 30) {
+                    continue;
+                }
 
-                const value = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
-                // For today, only show future slots.
-                if (selectedDate === today && value <= currentTime) continue;
+                const value =
+                    `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
-                const option = document.createElement("option");
+
+                // ====================================
+                // LUNCH BREAK
+                // 01:00 PM - 02:30 PM
+                // ====================================
+
+                if (isLunchBreak(value)) {
+                    continue;
+                }
+
+
+                // ====================================
+                // TODAY - PAST TIMES NOT ALLOWED
+                // ====================================
+
+                if (
+                    selectedDate === today &&
+                    value <= currentTime
+                ) {
+                    continue;
+                }
+
+
+                const option =
+                    document.createElement("option");
+
                 option.value = value;
-                option.textContent = formatTime(value);
+
+                option.textContent =
+                    formatTime(value);
+
                 timeSelect.appendChild(option);
             }
         }
 
+
+        // ====================================
+        // NO AVAILABLE SLOTS
+        // ====================================
+
         if (timeSelect.options.length === 1) {
-            timeSelect.innerHTML = '<option value="">No slots available today</option>';
+
+            timeSelect.innerHTML =
+                '<option value="">No slots available</option>';
         }
     }
 
-    // Set today's date automatically and load available times.
+
+    // ====================================
+    // SET TODAY
+    // ====================================
+
     dateSelect.value = today;
+
     populateTimeDropdown(today);
 
-    dateSelect.addEventListener("change", function () {
-        populateTimeDropdown(dateSelect.value);
-    });
-}
 
+    // ====================================
+    // DATE CHANGE
+    // ====================================
 
-// ========================================
-// FORMAT TIME
-// ========================================
+    dateSelect.addEventListener(
+        "change",
+        function () {
 
-function formatTime(time) {
-    const parts = time.split(":");
-    let hour = parseInt(parts[0], 10);
-    const minute = parts[1];
-    const ampm = hour >= 12 ? "PM" : "AM";
-
-    hour = hour % 12;
-    if (hour === 0) hour = 12;
-
-    return `${hour}:${minute} ${ampm}`;
+            populateTimeDropdown(
+                dateSelect.value
+            );
+        }
+    );
 }
 
 
@@ -157,16 +280,26 @@ document.addEventListener(
             "JK Saloon response.js loaded successfully"
         );
 
+
         console.log(
             "Backend API:",
             API_URL
         );
 
+
         console.log(
-            "Office Time:",
+            "Salon Time:",
             formatTime(OPEN_TIME),
             "-",
             formatTime(CLOSE_TIME)
+        );
+
+
+        console.log(
+            "Lunch Break:",
+            formatTime(LUNCH_START),
+            "-",
+            formatTime(LUNCH_END)
         );
 
 
@@ -182,15 +315,146 @@ document.addEventListener(
                 "submit",
                 bookAppointment
             );
-
         }
 
 
-        // Setup date and time
         setupDateTimeValidation();
 
+
+        // ====================================
+        // PHONE INPUT - ONLY NUMBERS
+        // ====================================
+
+        const phoneInput =
+            document.getElementById("customerPhone");
+
+
+        if (phoneInput) {
+
+            phoneInput.addEventListener(
+                "input",
+                function () {
+
+                    this.value =
+                        this.value
+                            .replace(/\D/g, "")
+                            .slice(0, 10);
+                }
+            );
+        }
     }
 );
+
+
+// ========================================
+// GET ALL APPOINTMENTS
+// ========================================
+
+async function getAllAppointments() {
+
+    const response =
+        await fetch(
+            API_URL + "?t=" + Date.now()
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Unable to fetch appointments"
+        );
+    }
+
+
+    return await response.json();
+}
+
+
+// ========================================
+// CHECK SAME PHONE - 24 HOURS
+// ========================================
+
+function hasRecentAppointment(
+    appointments,
+    phone
+) {
+
+    const now = new Date();
+
+
+    return appointments.some(
+        function (appointment) {
+
+            if (!appointment.phone) {
+                return false;
+            }
+
+
+            // Only compare exact phone number
+            if (
+                appointment.phone.trim() !==
+                phone.trim()
+            ) {
+                return false;
+            }
+
+
+            if (
+                !appointment.appointmentDate ||
+                !appointment.appointmentTime
+            ) {
+                return false;
+            }
+
+
+            const appointmentDateTime =
+                new Date(
+                    `${appointment.appointmentDate}T${appointment.appointmentTime}`
+                );
+
+
+            const difference =
+                now.getTime() -
+                appointmentDateTime.getTime();
+
+
+            // Future appointment
+            if (difference < 0) {
+
+                // Future appointment is also blocked
+                return true;
+            }
+
+
+            // Within previous 24 hours
+            return difference <
+                24 * 60 * 60 * 1000;
+        }
+    );
+}
+
+
+// ========================================
+// CHECK SAME DATE + TIME
+// ========================================
+
+function isSlotAlreadyBooked(
+    appointments,
+    date,
+    time
+) {
+
+    return appointments.some(
+        function (appointment) {
+
+            return (
+                appointment.appointmentDate === date &&
+                appointment.appointmentTime === time &&
+                appointment.status !== "CANCELLED"
+            );
+        }
+    );
+}
 
 
 // ========================================
@@ -202,9 +466,9 @@ async function bookAppointment(event) {
     event.preventDefault();
 
 
-    // ========================================
+    // ====================================
     // GET FORM VALUES
-    // ========================================
+    // ====================================
 
     const name =
         document
@@ -244,9 +508,9 @@ async function bookAppointment(event) {
             .value;
 
 
-    // ========================================
+    // ====================================
     // REQUIRED VALIDATION
-    // ========================================
+    // ====================================
 
     if (
         !name ||
@@ -262,13 +526,27 @@ async function bookAppointment(event) {
         );
 
         return;
-
     }
 
 
-    // ========================================
-    // DATE/TIME VALIDATION
-    // ========================================
+    // ====================================
+    // PHONE VALIDATION
+    // EXACTLY 10 DIGITS
+    // ====================================
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+
+        alert(
+            "Please enter a valid 10-digit mobile number."
+        );
+
+        return;
+    }
+
+
+    // ====================================
+    // DATE / TIME VALIDATION
+    // ====================================
 
     const today =
         getTodayIST();
@@ -278,9 +556,9 @@ async function bookAppointment(event) {
         getCurrentTimeIST();
 
 
-    // ----------------------------------------
+    // ====================================
     // PAST DATE
-    // ----------------------------------------
+    // ====================================
 
     if (date < today) {
 
@@ -289,13 +567,13 @@ async function bookAppointment(event) {
         );
 
         return;
-
     }
 
 
-    // ----------------------------------------
-    // OFFICE HOURS
-    // ----------------------------------------
+    // ====================================
+    // SALON HOURS
+    // 09:00 AM - 09:00 PM
+    // ====================================
 
     if (
         time < OPEN_TIME ||
@@ -311,13 +589,30 @@ async function bookAppointment(event) {
         );
 
         return;
-
     }
 
 
-    // ----------------------------------------
+    // ====================================
+    // LUNCH BREAK
+    // ====================================
+
+    if (isLunchBreak(time)) {
+
+        alert(
+            "Lunch break is from " +
+            formatTime(LUNCH_START) +
+            " to " +
+            formatTime(LUNCH_END) +
+            ". Please select another time."
+        );
+
+        return;
+    }
+
+
+    // ====================================
     // TODAY + PAST TIME
-    // ----------------------------------------
+    // ====================================
 
     if (
         date === today &&
@@ -329,13 +624,78 @@ async function bookAppointment(event) {
         );
 
         return;
-
     }
 
 
-    // ========================================
+    // ====================================
+    // GET EXISTING APPOINTMENTS
+    // ====================================
+
+    let appointments;
+
+
+    try {
+
+        appointments =
+            await getAllAppointments();
+
+    } catch (error) {
+
+        console.error(
+            "Appointment Fetch Error:",
+            error
+        );
+
+        alert(
+            "Unable to check appointment availability. Please try again."
+        );
+
+        return;
+    }
+
+
+    // ====================================
+    // SAME DATE + SAME TIME
+    // ====================================
+
+    if (
+        isSlotAlreadyBooked(
+            appointments,
+            date,
+            time
+        )
+    ) {
+
+        alert(
+            "This appointment time is already booked. Please select another time."
+        );
+
+        return;
+    }
+
+
+    // ====================================
+    // SAME PERSON - 24 HOURS
+    // ====================================
+
+    if (
+        hasRecentAppointment(
+            appointments,
+            phone
+        )
+    ) {
+
+        alert(
+            "This mobile number already has an appointment within 24 hours. Please try again after 24 hours."
+        );
+
+        return;
+    }
+
+
+    // ====================================
     // CREATE APPOINTMENT OBJECT
-    // ========================================
+    // ====================================
 
     const appointment = {
 
@@ -352,7 +712,6 @@ async function bookAppointment(event) {
         appointmentTime: time,
 
         status: "BOOKED"
-
     };
 
 
@@ -362,12 +721,11 @@ async function bookAppointment(event) {
     );
 
 
-    // ========================================
+    // ====================================
     // SEND TO SPRING BOOT
-    // ========================================
+    // ====================================
 
     try {
-
 
         const response =
             await fetch(
@@ -394,23 +752,40 @@ async function bookAppointment(event) {
         );
 
 
+        // ====================================
+        // SERVER ERROR
+        // ====================================
+
         if (!response.ok) {
 
-            throw new Error(
-                "Server Error: " +
-                response.status
-            );
+            let errorMessage =
+                "Unable to book appointment.";
 
+
+            try {
+
+                const errorData =
+                    await response.json();
+
+
+                if (errorData.message) {
+
+                    errorMessage =
+                        errorData.message;
+                }
+
+            } catch (e) {
+
+                console.log(
+                    "No JSON error response"
+                );
+            }
+
+
+            alert(errorMessage);
+
+            return;
         }
-            showBookingSuccess({
-    customer: name,
-    service: service,
-    packageName: packageName,
-    date: date,
-    time: time
-});
-
-        
 
 
         // ====================================
@@ -428,13 +803,31 @@ async function bookAppointment(event) {
 
 
         // ====================================
-        // SUCCESS MESSAGE
+        // SUCCESS POPUP
+        // ====================================
+
+        showBookingSuccess({
+
+            customer: name,
+
+            service: service,
+
+            packageName: packageName,
+
+            date: date,
+
+            time: formatTime(time)
+        });
+
+
+        // ====================================
+        // OLD SUCCESS RESPONSE
         // ====================================
 
         showBookingResponse(
             name,
             date,
-            time
+            formatTime(time)
         );
 
 
@@ -449,12 +842,32 @@ async function bookAppointment(event) {
             .reset();
 
 
-        // Form is reset to the default dropdown selections.
+        // Restore today's date
+        const dateSelect =
+            document.getElementById(
+                "appointmentDate"
+            );
 
 
+        if (dateSelect) {
+
+            dateSelect.value =
+                getTodayIST();
+        }
+
+
+        // Recreate today's available times
+        const event =
+            new Event("change");
+
+        if (dateSelect) {
+
+            dateSelect.dispatchEvent(event);
+        }
     }
-    catch (error) {
 
+
+    catch (error) {
 
         console.error(
             "Booking Error:",
@@ -464,11 +877,9 @@ async function bookAppointment(event) {
 
         alert(
             "Unable to book appointment.\n\n" +
-            "Please make sure Spring Boot is running on port 8080."
+            "Please try again."
         );
-
     }
-
 }
 
 
@@ -481,7 +892,6 @@ function showBookingResponse(
     date,
     time
 ) {
-
 
     const response =
         document.getElementById(
@@ -496,7 +906,6 @@ function showBookingResponse(
         );
 
         return;
-
     }
 
 
@@ -547,7 +956,6 @@ function showBookingResponse(
 
 
     // Hide after 7 seconds
-
     setTimeout(
         function () {
 
@@ -560,7 +968,6 @@ function showBookingResponse(
         },
         7000
     );
-
 }
 
 
@@ -570,7 +977,6 @@ function showBookingResponse(
 
 function selectStyle(styleName) {
 
-
     const service =
         document.getElementById(
             "service"
@@ -578,7 +984,6 @@ function selectStyle(styleName) {
 
 
     if (service) {
-
 
         const option =
             Array.from(
@@ -603,16 +1008,13 @@ function selectStyle(styleName) {
                 option.value
             );
 
-        }
-        else {
+        } else {
 
             console.warn(
                 "Style not found:",
                 styleName
             );
-
         }
-
     }
 
 
@@ -628,9 +1030,7 @@ function selectStyle(styleName) {
             behavior: "smooth",
             block: "center"
         });
-
     }
-
 }
 
 
@@ -640,7 +1040,6 @@ function selectStyle(styleName) {
 
 function selectPackage(packageName) {
 
-
     const packageSelect =
         document.getElementById(
             "package"
@@ -648,7 +1047,6 @@ function selectPackage(packageName) {
 
 
     if (packageSelect) {
-
 
         const option =
             Array.from(
@@ -673,16 +1071,13 @@ function selectPackage(packageName) {
                 option.value
             );
 
-        }
-        else {
+        } else {
 
             console.warn(
                 "Package not found:",
                 packageName
             );
-
         }
-
     }
 
 
@@ -698,9 +1093,7 @@ function selectPackage(packageName) {
             behavior: "smooth",
             block: "center"
         });
-
     }
-
 }
 
 
@@ -710,7 +1103,6 @@ function selectPackage(packageName) {
 
 function goToAppointment() {
 
-
     const appointment =
         document.getElementById(
             "appointment"
@@ -723,19 +1115,9 @@ function goToAppointment() {
             behavior: "smooth",
             block: "center"
         });
-
     }
-
 }
 
-
-// ========================================
-// TEST MESSAGE
-// ========================================
-
-console.log(
-    "JK Saloon JavaScript is ready"
-);
 
 // ========================================
 // MOBILE MENU
@@ -743,84 +1125,156 @@ console.log(
 
 function toggleMobileMenu() {
 
-    const nav = document.getElementById("mainNav");
+    const nav =
+        document.getElementById(
+            "mainNav"
+        );
+
 
     if (!nav) {
         return;
     }
 
-    nav.classList.toggle("mobile-open");
+
+    nav.classList.toggle(
+        "mobile-open"
+    );
 }
 
 
-// Close mobile menu after clicking a link
+// ========================================
+// CLOSE MOBILE MENU
+// ========================================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    const navLinks =
-        document.querySelectorAll("#mainNav a");
+        const navLinks =
+            document.querySelectorAll(
+                "#mainNav a"
+            );
 
-    navLinks.forEach(function (link) {
 
-        link.addEventListener("click", function () {
+        navLinks.forEach(
+            function (link) {
 
-            const nav =
-                document.getElementById("mainNav");
+                link.addEventListener(
+                    "click",
+                    function () {
 
-            if (nav) {
-                nav.classList.remove("mobile-open");
+                        const nav =
+                            document.getElementById(
+                                "mainNav"
+                            );
+
+
+                        if (nav) {
+
+                            nav.classList.remove(
+                                "mobile-open"
+                            );
+                        }
+                    }
+                );
             }
+        );
+    }
+);
 
-        });
 
-    });
-
-});
-
-/* =========================================
-   BOOKING SUCCESS POPUP FUNCTIONS
-   ========================================= */
+// =========================================
+// BOOKING SUCCESS POPUP
+// =========================================
 
 function showBookingSuccess(details) {
 
-    const modal = document.getElementById("bookingSuccessModal");
+    const modal =
+        document.getElementById(
+            "bookingSuccessModal"
+        );
 
-    if (!modal) return;
 
-    document.getElementById("successCustomer").textContent =
+    if (!modal) {
+        return;
+    }
+
+
+    document.getElementById(
+        "successCustomer"
+    ).textContent =
         details.customer || "-";
 
-    document.getElementById("successService").textContent =
+
+    document.getElementById(
+        "successService"
+    ).textContent =
         details.service || "-";
 
-    document.getElementById("successPackage").textContent =
+
+    document.getElementById(
+        "successPackage"
+    ).textContent =
         details.packageName || "-";
 
-    document.getElementById("successDate").textContent =
+
+    document.getElementById(
+        "successDate"
+    ).textContent =
         details.date || "-";
 
-    document.getElementById("successTime").textContent =
+
+    document.getElementById(
+        "successTime"
+    ).textContent =
         details.time || "-";
+
 
     modal.classList.add("show");
 
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow =
+        "hidden";
 
-    setTimeout(function () {
 
-        closeBookingSuccess();
+    setTimeout(
+        function () {
 
-    }, 5000);
+            closeBookingSuccess();
+
+        },
+        5000
+    );
 }
 
+
+// =========================================
+// CLOSE BOOKING SUCCESS
+// =========================================
 
 function closeBookingSuccess() {
 
-    const modal = document.getElementById("bookingSuccessModal");
+    const modal =
+        document.getElementById(
+            "bookingSuccessModal"
+        );
 
-    if (!modal) return;
+
+    if (!modal) {
+        return;
+    }
+
 
     modal.classList.remove("show");
 
-    document.body.style.overflow = "";
+    document.body.style.overflow =
+        "";
 }
+
+
+// ========================================
+// TEST
+// ========================================
+
+console.log(
+    "JK Saloon JavaScript is ready"
+);
