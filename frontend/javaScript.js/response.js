@@ -721,168 +721,194 @@ async function bookAppointment(event) {
     );
 
 
+   // ========================================
+// SEND TO SPRING BOOT
+// ========================================
+
+try {
+
+    const response = await fetch(
+        API_URL,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(appointment)
+        }
+    );
+
+    console.log(
+        "Server response status:",
+        response.status
+    );
+
+
     // ====================================
-    // SEND TO SPRING BOOT
+    // SERVER ERROR
     // ====================================
 
-    try {
+    if (!response.ok) {
 
-        const response =
-            await fetch(
-                API_URL,
-                {
-                    method: "POST",
+        let errorMessage =
+            "Unable to book appointment.";
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+        try {
 
-                    body:
-                        JSON.stringify(
-                            appointment
-                        )
-                }
+            // Read response as TEXT first
+            const responseText =
+                await response.text();
+
+            console.log(
+                "Server error response:",
+                responseText
             );
 
 
-        console.log(
-            "Server response:",
-            response.status
-        );
-
-
-        // ====================================
-        // SERVER ERROR
-        // ====================================
-
-        if (!response.ok) {
-
-            let errorMessage =
-                "Unable to book appointment.";
-
-
+            // Try JSON
             try {
 
                 const errorData =
-                    await response.json();
-
+                    JSON.parse(responseText);
 
                 if (errorData.message) {
 
                     errorMessage =
                         errorData.message;
+
+                } else if (errorData.error) {
+
+                    errorMessage =
+                        errorData.error;
                 }
 
-            } catch (e) {
+            } catch (jsonError) {
 
-                console.log(
-                    "No JSON error response"
-                );
+                // If response is plain text
+                if (responseText.trim()) {
+
+                    errorMessage =
+                        responseText.trim();
+                }
             }
 
+        } catch (readError) {
 
-            alert(errorMessage);
-
-            return;
-        }
-
-
-        // ====================================
-        // SAVED APPOINTMENT
-        // ====================================
-
-        const savedAppointment =
-            await response.json();
-
-
-        console.log(
-            "Appointment saved successfully:",
-            savedAppointment
-        );
-
-
-        // ====================================
-        // SUCCESS POPUP
-        // ====================================
-
-        showBookingSuccess({
-
-            customer: name,
-
-            service: service,
-
-            packageName: packageName,
-
-            date: date,
-
-            time: formatTime(time)
-        });
-
-
-        // ====================================
-        // OLD SUCCESS RESPONSE
-        // ====================================
-
-        showBookingResponse(
-            name,
-            date,
-            formatTime(time)
-        );
-
-
-        // ====================================
-        // RESET FORM
-        // ====================================
-
-        document
-            .getElementById(
-                "appointmentForm"
-            )
-            .reset();
-
-
-        // Restore today's date
-        const dateSelect =
-            document.getElementById(
-                "appointmentDate"
+            console.error(
+                "Unable to read server error:",
+                readError
             );
-
-
-        if (dateSelect) {
-
-            dateSelect.value =
-                getTodayIST();
         }
 
-
-        // Recreate today's available times
-        const event =
-            new Event("change");
-
-        if (dateSelect) {
-
-            dateSelect.dispatchEvent(event);
-        }
-    }
-
-
-    catch (error) {
 
         console.error(
-            "Booking Error:",
-            error
+            "Booking failed:",
+            response.status,
+            errorMessage
         );
 
 
-        alert(
-            "Unable to book appointment.\n\n" +
-            "Please try again."
+        alert(errorMessage);
+
+        return;
+    }
+
+
+    // ====================================
+    // SUCCESS RESPONSE
+    // ====================================
+
+    const savedAppointment =
+        await response.json();
+
+
+    console.log(
+        "Appointment saved successfully:",
+        savedAppointment
+    );
+
+
+    // ====================================
+    // SUCCESS POPUP
+    // ====================================
+
+    showBookingSuccess({
+
+        customer: name,
+
+        service: service,
+
+        packageName: packageName,
+
+        date: date,
+
+        time: formatTime(time)
+    });
+
+
+    // ====================================
+    // OLD SUCCESS RESPONSE
+    // ====================================
+
+    showBookingResponse(
+        name,
+        date,
+        formatTime(time)
+    );
+
+
+    // ====================================
+    // RESET FORM
+    // ====================================
+
+    document
+        .getElementById("appointmentForm")
+        .reset();
+
+
+    // Restore today's date
+    const dateSelect =
+        document.getElementById(
+            "appointmentDate"
+        );
+
+
+    if (dateSelect) {
+
+        dateSelect.value =
+            getTodayIST();
+    }
+
+
+    // Recreate today's available times
+    const changeEvent =
+        new Event("change");
+
+
+    if (dateSelect) {
+
+        dateSelect.dispatchEvent(
+            changeEvent
         );
     }
+
 }
 
+catch (error) {
 
+    console.error(
+        "Booking Error:",
+        error
+    );
+
+
+    alert(
+        "Unable to book appointment.\n\n" +
+        "Please try again."
+    );
+}
 // ========================================
 // SUCCESS MESSAGE
 // ========================================
