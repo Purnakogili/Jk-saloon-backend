@@ -10,13 +10,9 @@ const API_URL =
 // SALOON TIMINGS
 // ========================================
 
-// 09:00 AM
 const OPEN_TIME = "09:00";
-
-// 09:00 PM
 const CLOSE_TIME = "21:00";
 
-// Lunch Break
 const LUNCH_START = "13:00";
 const LUNCH_END = "14:30";
 
@@ -85,7 +81,8 @@ function formatTime(time) {
 
 function isLunchBreak(time) {
 
-    return time >= LUNCH_START && time < LUNCH_END;
+    return time >= LUNCH_START &&
+           time < LUNCH_END;
 }
 
 
@@ -105,7 +102,6 @@ function setupDateTimeValidation() {
         return;
     }
 
-
     const today = getTodayIST();
 
 
@@ -121,31 +117,34 @@ function setupDateTimeValidation() {
 
         const date = new Date();
 
-        date.setDate(date.getDate() + i);
-
+        date.setDate(
+            date.getDate() + i
+        );
 
         const year =
             date.getFullYear();
 
         const month =
-            String(date.getMonth() + 1).padStart(2, "0");
+            String(date.getMonth() + 1)
+                .padStart(2, "0");
 
         const day =
-            String(date.getDate()).padStart(2, "0");
-
+            String(date.getDate())
+                .padStart(2, "0");
 
         const value =
             `${year}-${month}-${day}`;
 
-
         const label =
-            date.toLocaleDateString("en-IN", {
-                weekday: "short",
-                day: "2-digit",
-                month: "short",
-                year: "numeric"
-            });
-
+            date.toLocaleDateString(
+                "en-IN",
+                {
+                    weekday: "short",
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
 
         const option =
             document.createElement("option");
@@ -167,11 +166,9 @@ function setupDateTimeValidation() {
         timeSelect.innerHTML =
             '<option value="">Select Time</option>';
 
-
         if (!selectedDate) {
             return;
         }
-
 
         const currentTime =
             getCurrentTimeIST();
@@ -187,10 +184,12 @@ function setupDateTimeValidation() {
             for (const minute of [0, 30]) {
 
                 // Do not create 09:30 PM
-                if (hour === 21 && minute === 30) {
+                if (
+                    hour === 21 &&
+                    minute === 30
+                ) {
                     continue;
                 }
-
 
                 const value =
                     `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
@@ -198,7 +197,6 @@ function setupDateTimeValidation() {
 
                 // ====================================
                 // LUNCH BREAK
-                // 01:00 PM - 02:30 PM
                 // ====================================
 
                 if (isLunchBreak(value)) {
@@ -280,12 +278,10 @@ document.addEventListener(
             "JK Saloon response.js loaded successfully"
         );
 
-
         console.log(
             "Backend API:",
             API_URL
         );
-
 
         console.log(
             "Salon Time:",
@@ -293,7 +289,6 @@ document.addEventListener(
             "-",
             formatTime(CLOSE_TIME)
         );
-
 
         console.log(
             "Lunch Break:",
@@ -326,7 +321,9 @@ document.addEventListener(
         // ====================================
 
         const phoneInput =
-            document.getElementById("customerPhone");
+            document.getElementById(
+                "customerPhone"
+            );
 
 
         if (phoneInput) {
@@ -390,7 +387,10 @@ function hasRecentAppointment(
             }
 
 
-            // Only compare exact phone number
+            // ====================================
+            // EXACT PHONE NUMBER
+            // ====================================
+
             if (
                 appointment.phone.trim() !==
                 phone.trim()
@@ -407,6 +407,20 @@ function hasRecentAppointment(
             }
 
 
+            // ====================================
+            // CANCELLED APPOINTMENTS
+            // SHOULD NOT BLOCK
+            // ====================================
+
+            if (
+                appointment.status &&
+                appointment.status
+                    .toUpperCase() === "CANCELLED"
+            ) {
+                return false;
+            }
+
+
             const appointmentDateTime =
                 new Date(
                     `${appointment.appointmentDate}T${appointment.appointmentTime}`
@@ -418,15 +432,19 @@ function hasRecentAppointment(
                 appointmentDateTime.getTime();
 
 
-            // Future appointment
-            if (difference < 0) {
+            // ====================================
+            // FUTURE APPOINTMENT
+            // ====================================
 
-                // Future appointment is also blocked
+            if (difference < 0) {
                 return true;
             }
 
 
-            // Within previous 24 hours
+            // ====================================
+            // PREVIOUS 24 HOURS
+            // ====================================
+
             return difference <
                 24 * 60 * 60 * 1000;
         }
@@ -450,7 +468,8 @@ function isSlotAlreadyBooked(
             return (
                 appointment.appointmentDate === date &&
                 appointment.appointmentTime === time &&
-                appointment.status !== "CANCELLED"
+                (!appointment.status ||
+                 appointment.status.toUpperCase() !== "CANCELLED")
             );
         }
     );
@@ -531,7 +550,6 @@ async function bookAppointment(event) {
 
     // ====================================
     // PHONE VALIDATION
-    // EXACTLY 10 DIGITS
     // ====================================
 
     if (!/^[0-9]{10}$/.test(phone)) {
@@ -550,7 +568,6 @@ async function bookAppointment(event) {
 
     const today =
         getTodayIST();
-
 
     const currentTime =
         getCurrentTimeIST();
@@ -572,7 +589,6 @@ async function bookAppointment(event) {
 
     // ====================================
     // SALON HOURS
-    // 09:00 AM - 09:00 PM
     // ====================================
 
     if (
@@ -721,194 +737,224 @@ async function bookAppointment(event) {
     );
 
 
-   // ========================================
-// SEND TO SPRING BOOT
-// ========================================
+    // ========================================
+    // SEND TO SPRING BOOT
+    // ========================================
 
-try {
+    try {
 
-    const response = await fetch(
-        API_URL,
-        {
-            method: "POST",
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "POST",
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-            body: JSON.stringify(appointment)
-        }
-    );
-
-    console.log(
-        "Server response status:",
-        response.status
-    );
-
-
-    // ====================================
-    // SERVER ERROR
-    // ====================================
-
-    if (!response.ok) {
-
-        let errorMessage =
-            "Unable to book appointment.";
-
-        try {
-
-            // Read response as TEXT first
-            const responseText =
-                await response.text();
-
-            console.log(
-                "Server error response:",
-                responseText
+                    body:
+                        JSON.stringify(
+                            appointment
+                        )
+                }
             );
 
 
-            // Try JSON
+        console.log(
+            "Server response status:",
+            response.status
+        );
+
+
+        // ====================================
+        // SERVER ERROR
+        // ====================================
+
+        if (!response.ok) {
+
+            let errorMessage =
+                "Unable to book appointment.";
+
+
             try {
 
-                const errorData =
-                    JSON.parse(responseText);
+                // Read response as TEXT
+                const responseText =
+                    await response.text();
 
-                if (errorData.message) {
 
-                    errorMessage =
-                        errorData.message;
+                console.log(
+                    "Server error response:",
+                    responseText
+                );
 
-                } else if (errorData.error) {
 
-                    errorMessage =
-                        errorData.error;
-                }
-
-            } catch (jsonError) {
-
-                // If response is plain text
                 if (responseText.trim()) {
 
-                    errorMessage =
-                        responseText.trim();
+                    // ====================================
+                    // TRY JSON
+                    // ====================================
+
+                    try {
+
+                        const errorData =
+                            JSON.parse(
+                                responseText
+                            );
+
+
+                        if (
+                            errorData.message
+                        ) {
+
+                            errorMessage =
+                                errorData.message;
+
+                        } else if (
+                            errorData.error
+                        ) {
+
+                            errorMessage =
+                                errorData.error;
+                        }
+
+                    } catch (jsonError) {
+
+                        // ====================================
+                        // PLAIN TEXT RESPONSE
+                        // ====================================
+
+                        errorMessage =
+                            responseText.trim();
+                    }
                 }
+
+            } catch (readError) {
+
+                console.error(
+                    "Unable to read server error:",
+                    readError
+                );
             }
 
-        } catch (readError) {
 
             console.error(
-                "Unable to read server error:",
-                readError
+                "Booking failed:",
+                response.status,
+                errorMessage
             );
+
+
+            alert(
+                errorMessage
+            );
+
+            return;
         }
 
 
+        // ====================================
+        // SUCCESS RESPONSE
+        // ====================================
+
+        const savedAppointment =
+            await response.json();
+
+
+        console.log(
+            "Appointment saved successfully:",
+            savedAppointment
+        );
+
+
+        // ====================================
+        // SUCCESS POPUP
+        // ====================================
+
+        showBookingSuccess({
+
+            customer: name,
+
+            service: service,
+
+            packageName: packageName,
+
+            date: date,
+
+            time: formatTime(time)
+        });
+
+
+        // ====================================
+        // OLD SUCCESS RESPONSE
+        // ====================================
+
+        showBookingResponse(
+            name,
+            date,
+            formatTime(time)
+        );
+
+
+        // ====================================
+        // RESET FORM
+        // ====================================
+
+        const appointmentForm =
+            document.getElementById(
+                "appointmentForm"
+            );
+
+
+        if (appointmentForm) {
+
+            appointmentForm.reset();
+        }
+
+
+        // ====================================
+        // RESTORE TODAY
+        // ====================================
+
+        const dateSelect =
+            document.getElementById(
+                "appointmentDate"
+            );
+
+
+        if (dateSelect) {
+
+            dateSelect.value =
+                getTodayIST();
+
+
+            const changeEvent =
+                new Event("change");
+
+
+            dateSelect.dispatchEvent(
+                changeEvent
+            );
+        }
+
+    } catch (error) {
+
         console.error(
-            "Booking failed:",
-            response.status,
-            errorMessage
+            "Booking Error:",
+            error
         );
 
 
-        alert(errorMessage);
-
-        return;
-    }
-
-
-    // ====================================
-    // SUCCESS RESPONSE
-    // ====================================
-
-    const savedAppointment =
-        await response.json();
-
-
-    console.log(
-        "Appointment saved successfully:",
-        savedAppointment
-    );
-
-
-    // ====================================
-    // SUCCESS POPUP
-    // ====================================
-
-    showBookingSuccess({
-
-        customer: name,
-
-        service: service,
-
-        packageName: packageName,
-
-        date: date,
-
-        time: formatTime(time)
-    });
-
-
-    // ====================================
-    // OLD SUCCESS RESPONSE
-    // ====================================
-
-    showBookingResponse(
-        name,
-        date,
-        formatTime(time)
-    );
-
-
-    // ====================================
-    // RESET FORM
-    // ====================================
-
-    document
-        .getElementById("appointmentForm")
-        .reset();
-
-
-    // Restore today's date
-    const dateSelect =
-        document.getElementById(
-            "appointmentDate"
-        );
-
-
-    if (dateSelect) {
-
-        dateSelect.value =
-            getTodayIST();
-    }
-
-
-    // Recreate today's available times
-    const changeEvent =
-        new Event("change");
-
-
-    if (dateSelect) {
-
-        dateSelect.dispatchEvent(
-            changeEvent
+        alert(
+            "Unable to book appointment.\n\n" +
+            "Please try again."
         );
     }
-
 }
 
-catch (error) {
 
-    console.error(
-        "Booking Error:",
-        error
-    );
-
-
-    alert(
-        "Unable to book appointment.\n\n" +
-        "Please try again."
-    );
-}
 // ========================================
 // SUCCESS MESSAGE
 // ========================================
@@ -1226,34 +1272,65 @@ function showBookingSuccess(details) {
     }
 
 
-    document.getElementById(
-        "successCustomer"
-    ).textContent =
-        details.customer || "-";
+    const successCustomer =
+        document.getElementById(
+            "successCustomer"
+        );
+
+    const successService =
+        document.getElementById(
+            "successService"
+        );
+
+    const successPackage =
+        document.getElementById(
+            "successPackage"
+        );
+
+    const successDate =
+        document.getElementById(
+            "successDate"
+        );
+
+    const successTime =
+        document.getElementById(
+            "successTime"
+        );
 
 
-    document.getElementById(
-        "successService"
-    ).textContent =
-        details.service || "-";
+    if (successCustomer) {
+
+        successCustomer.textContent =
+            details.customer || "-";
+    }
 
 
-    document.getElementById(
-        "successPackage"
-    ).textContent =
-        details.packageName || "-";
+    if (successService) {
+
+        successService.textContent =
+            details.service || "-";
+    }
 
 
-    document.getElementById(
-        "successDate"
-    ).textContent =
-        details.date || "-";
+    if (successPackage) {
+
+        successPackage.textContent =
+            details.packageName || "-";
+    }
 
 
-    document.getElementById(
-        "successTime"
-    ).textContent =
-        details.time || "-";
+    if (successDate) {
+
+        successDate.textContent =
+            details.date || "-";
+    }
+
+
+    if (successTime) {
+
+        successTime.textContent =
+            details.time || "-";
+    }
 
 
     modal.classList.add("show");
