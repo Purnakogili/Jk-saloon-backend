@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.jksaloon.backend.entity.Appointment;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-
+    
     boolean existsByAppointmentDateAndAppointmentTime(
             java.time.LocalDate appointmentDate,
             java.time.LocalTime appointmentTime

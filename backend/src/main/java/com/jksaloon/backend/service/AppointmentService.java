@@ -217,7 +217,7 @@ public class AppointmentService {
 
         try {
 
-            return appointmentRepository.save(appointment);
+            return appointmentRepository.saveAndFlush(appointment);
 
         } catch (DataIntegrityViolationException e) {
 
