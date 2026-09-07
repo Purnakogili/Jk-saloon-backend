@@ -4,10 +4,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -42,16 +40,18 @@ public class AppointmentService {
 
 
         // =========================================
-        // PHONE - EXACTLY 10 DIGITS
+        // PHONE VALIDATION
+        // 10 DIGITS
+        // MUST START WITH 6, 7, 8 OR 9
         // =========================================
 
         String phone = appointment.getPhone();
 
-        if (phone == null || !phone.matches("\\d{10}")) {
+        if (phone == null || !phone.matches("[6-9]\\d{9}")) {
 
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Please enter a valid 10-digit mobile number."
+                    "Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9."
             );
         }
 
@@ -118,7 +118,8 @@ public class AppointmentService {
         LocalTime lunchStart = LocalTime.of(13, 0);
         LocalTime lunchEnd = LocalTime.of(14, 30);
 
-        if (!time.isBefore(lunchStart) && time.isBefore(lunchEnd)) {
+        if (!time.isBefore(lunchStart) &&
+                time.isBefore(lunchEnd)) {
 
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -139,31 +140,17 @@ public class AppointmentService {
 
 
         // =========================================
-        // DUPLICATE DATE + TIME CHECK
-        // =========================================
-
-        boolean slotAlreadyBooked =
-                appointmentRepository.existsByAppointmentDateAndAppointmentTime(
-                        date,
-                        time
-                );
-
-        if (slotAlreadyBooked) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "This appointment time is already booked. Please select another time."
-            );
-        }
-
-
-        // =========================================
         // SAME PHONE - 24 HOURS RESTRICTION
+        //
+        // Same time can be booked by multiple
+        // customers.
+        //
+        // But same mobile number cannot book
+        // again within 24 hours.
         // =========================================
 
         List<Appointment> previousAppointments =
                 appointmentRepository.findByPhone(phone);
-
 
         LocalDateTime requestedDateTime =
                 LocalDateTime.of(date, time);
@@ -215,17 +202,7 @@ public class AppointmentService {
         // SAVE APPOINTMENT
         // =========================================
 
-        try {
-
-            return appointmentRepository.saveAndFlush(appointment);
-
-        } catch (DataIntegrityViolationException e) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "This appointment time is already booked. Please select another time."
-            );
-        }
+        return appointmentRepository.save(appointment);
     }
 
 
@@ -261,7 +238,8 @@ public class AppointmentService {
 
     public Appointment updateStatus(Long id, String status) {
 
-        Appointment appointment = getAppointmentById(id);
+        Appointment appointment =
+                getAppointmentById(id);
 
         appointment.setStatus(status);
 
