@@ -1946,3 +1946,33 @@ body {
     background: #111;
     color: #fff;
 }
+
+
+.location-section {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.location-section h2 {
+    color: gold;
+    margin-bottom: 15px;
+}
+
+.location-section p {
+    margin: 5px 0;
+}
+
+.location-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background: gold;
+    color: #000;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.location-btn:hover {
+    opacity: 0.85;
+}
