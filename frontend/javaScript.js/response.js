@@ -2,12 +2,28 @@
 // JK SALOON - RESPONSE.JS
 // ========================================
 
+// ========================================
+// BACKEND API
+// ========================================
+
 const API_URL =
     "https://jk-saloon-backend-n69q.onrender.com/api/appointments";
 
 
 // ========================================
-// SALOON TIMINGS
+// PACKAGE PRICES
+// ========================================
+
+const PACKAGE_PRICES = {
+    basic: 199,
+    classic: 299,
+    premium: 399,
+    royal: 499
+};
+
+
+// ========================================
+// SALON TIMINGS
 // ========================================
 
 const OPEN_TIME = "09:00";
@@ -15,6 +31,40 @@ const CLOSE_TIME = "21:00";
 
 const LUNCH_START = "13:00";
 const LUNCH_END = "14:30";
+
+
+// ========================================
+// GET PACKAGE PRICE
+// ========================================
+
+function getPackagePrice(packageName) {
+
+    if (!packageName) {
+        return 0;
+    }
+
+    const name = packageName
+        .toLowerCase()
+        .trim();
+
+    if (name.includes("basic")) {
+        return PACKAGE_PRICES.basic;
+    }
+
+    if (name.includes("classic")) {
+        return PACKAGE_PRICES.classic;
+    }
+
+    if (name.includes("premium")) {
+        return PACKAGE_PRICES.premium;
+    }
+
+    if (name.includes("royal")) {
+        return PACKAGE_PRICES.royal;
+    }
+
+    return 0;
+}
 
 
 // ========================================
@@ -53,15 +103,20 @@ function getCurrentTimeIST() {
 
 // ========================================
 // FORMAT TIME
+// 24-HOUR → 12-HOUR AM/PM
 // ========================================
 
 function formatTime(time) {
+
+    if (!time) {
+        return "-";
+    }
 
     const parts = time.split(":");
 
     let hour = parseInt(parts[0], 10);
 
-    const minute = parts[1];
+    const minute = parts[1] || "00";
 
     const ampm = hour >= 12 ? "PM" : "AM";
 
@@ -159,6 +214,8 @@ function setupDateTimeValidation() {
 
     // ====================================
     // POPULATE TIME OPTIONS
+    // 09:00 AM - 09:00 PM
+    // 30 MINUTE INTERVAL
     // ====================================
 
     function populateTimeDropdown(selectedDate) {
@@ -174,11 +231,6 @@ function setupDateTimeValidation() {
             getCurrentTimeIST();
 
 
-        // ====================================
-        // 09:00 AM TO 09:00 PM
-        // 30 MINUTE INTERVAL
-        // ====================================
-
         for (let hour = 9; hour <= 21; hour++) {
 
             for (const minute of [0, 30]) {
@@ -191,6 +243,8 @@ function setupDateTimeValidation() {
                     continue;
                 }
 
+                // Database value
+                // Example: 14:30
                 const value =
                     `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
@@ -219,8 +273,10 @@ function setupDateTimeValidation() {
                 const option =
                     document.createElement("option");
 
+                // Backend receives 24-hour value
                 option.value = value;
 
+                // User sees 12-hour value
                 option.textContent =
                     formatTime(value);
 
@@ -354,14 +410,12 @@ async function getAllAppointments() {
             API_URL + "?t=" + Date.now()
         );
 
-
     if (!response.ok) {
 
         throw new Error(
             "Unable to fetch appointments"
         );
     }
-
 
     return await response.json();
 }
@@ -377,7 +431,6 @@ function hasRecentAppointment(
 ) {
 
     const now = new Date();
-
 
     return appointments.some(
         function (appointment) {
@@ -467,9 +520,12 @@ function isSlotAlreadyBooked(
 
             return (
                 appointment.appointmentDate === date &&
-                appointment.appointmentTime === time &&
-                (!appointment.status ||
-                 appointment.status.toUpperCase() !== "CANCELLED")
+                appointment.appointmentTime?.substring(0, 5) === time &&
+                (
+                    !appointment.status ||
+                    appointment.status
+                        .toUpperCase() !== "CANCELLED"
+                )
             );
         }
     );
@@ -649,7 +705,6 @@ async function bookAppointment(event) {
 
     let appointments;
 
-
     try {
 
         appointments =
@@ -725,6 +780,9 @@ async function bookAppointment(event) {
 
         appointmentDate: date,
 
+        // IMPORTANT:
+        // Database stores 24-hour format
+        // Example: 14:30
         appointmentTime: time,
 
         status: "BOOKED"
@@ -780,7 +838,6 @@ async function bookAppointment(event) {
 
             try {
 
-                // Read response as TEXT
                 const responseText =
                     await response.text();
 
@@ -792,10 +849,6 @@ async function bookAppointment(event) {
 
 
                 if (responseText.trim()) {
-
-                    // ====================================
-                    // TRY JSON
-                    // ====================================
 
                     try {
 
@@ -821,10 +874,6 @@ async function bookAppointment(event) {
                         }
 
                     } catch (jsonError) {
-
-                        // ====================================
-                        // PLAIN TEXT RESPONSE
-                        // ====================================
 
                         errorMessage =
                             responseText.trim();
@@ -883,6 +932,7 @@ async function bookAppointment(event) {
 
             date: date,
 
+            // Show AM/PM to customer
             time: formatTime(time)
         });
 
@@ -1277,20 +1327,24 @@ function showBookingSuccess(details) {
             "successCustomer"
         );
 
+
     const successService =
         document.getElementById(
             "successService"
         );
+
 
     const successPackage =
         document.getElementById(
             "successPackage"
         );
 
+
     const successDate =
         document.getElementById(
             "successDate"
         );
+
 
     const successTime =
         document.getElementById(
@@ -1375,7 +1429,7 @@ function closeBookingSuccess() {
 
 
 // ========================================
-// TEST
+// READY
 // ========================================
 
 console.log(
